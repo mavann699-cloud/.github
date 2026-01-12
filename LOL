@@ -1,0 +1,29 @@
+@echo off
+title Lock Windows & Office activation - DO NOT RUN ON YOUR MAIN PC
+
+echo =============================================
+echo       Locking Windows/Office key change
+echo =============================================
+echo.
+
+:: Block GUI key change
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform" /v NoGenTicket /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform" /v AllowWindowsActivateOnline /t REG_DWORD /d 0 /f
+
+:: Classic old block - very often still works
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform" /v SkipRearm /t REG_DWORD /d 1 /f
+
+:: Block slui.exe (Change product key window)
+takeown /F "%SystemRoot%\System32\slui.exe" >nul 2>&1
+icacls  "%SystemRoot%\System32\slui.exe" /deny Everyone:(RX) >nul 2>&1
+
+:: Block changepk.exe (Windows 10/11 quick key change)
+takeown /F "%SystemRoot%\System32\changepk.exe" >nul 2>&1
+icacls  "%SystemRoot%\System32\changepk.exe" /deny Everyone:(RX) >nul 2>&1
+
+echo.
+echo Done! (hopefully...)
+echo Most common ways to change key should be blocked now.
+echo.
+echo Press any key to exit...
+pause >nul
